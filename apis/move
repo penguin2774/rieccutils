@@ -262,14 +262,17 @@ function west(dist)
 end
 
 function goto(x, y, z)
+   local destx, desty, destz
    if y == nil then
-      local y = x.y
-      local z = x.z
-      local x = x.x
+      destx = x.x - currentX
+      desty = x.y - currentY 
+      destz = x.z - currentZ
+
+   else
+      destx = x - currentX
+      desty = y - currentY 
+      destz = z - currentZ
    end
-   destx = x - currentX
-   desty = y - currentY 
-   destz = z - currentZ
    if destx < 0 then
       west(math.abs(destx))
    elseif destx > 0 then
@@ -284,6 +287,9 @@ function goto(x, y, z)
       down(math.abs(destz))
    elseif destz > 0 then
       up(destz)
+   end
+   if type(x) == "table" and x.faceing then
+      face(x.faceing)
    end
 end
 

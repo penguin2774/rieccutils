@@ -145,11 +145,12 @@ function tower(hight, verts, diags)
 end
 
 
-function floor(width, height)
+function floor(width, depth)
+   local startingPos = move.getPos()
    for i = 1, width do
-      for j = 1, height do
+      for j = 1, depth do
 	 placeBlock()
-	 if height ~= j then
+	 if depth ~= j then
 	    move.forward(1)
 	 end
       end
@@ -164,5 +165,6 @@ function floor(width, height)
 	 move.turnRight()
       end
    end
+   move.goto(startingPos)
 end
 	 
