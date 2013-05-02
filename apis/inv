@@ -1,0 +1,51 @@
+currentSlot = 0
+
+
+function isFull()
+   for i = 1, 16 do
+      if turtle.getItemCount(i) == 0 then
+	 return(false)
+      end
+   end
+   return(true)
+end
+
+function select(slot)
+   if turtle.select(slot) then
+      currentSlot = slot
+      return(true)
+   else
+      return(false)
+   end
+end
+
+function getCurrentSlot()
+   return(currentSlot)
+end
+
+function findEmptySlot()
+   for i = 1, 16 do
+      if turtle.getItemCount(i) == 0 then
+	 return(i)
+      end
+   end
+   return(false)
+end
+
+function findNextEmptySlot()
+   for i = currentSlot + 1, 16 do
+      if turtle.getItemCount(i) == 0 then
+	 return(i)
+      end
+   end
+   return(false)
+end
+
+function dumpAll()
+   for i= 1, 16 do
+      if turtle.getItemCount(i) ~= 0 then
+	 turtle.select(i)
+	 turtle.drop()
+      end
+   end
+end

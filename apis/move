@@ -1,0 +1,380 @@
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
+faceing = NORTH
+currentX = 0 -- E+ W-
+currentY = 0 -- N+ S-
+currentZ = 0 -- UP+ DOWN-
+
+
+
+-- Event reaction functions   
+upBlocked = turtle.digUp
+forwardBlocked = turtle.dig
+downBlocked = turtle.digDown
+
+function attemptRefuel()
+   for i = 1, 16 do
+      turtle.select(i)
+      if turtle.refuel(turtle.getItemCount(i)) then
+	 return(true)
+      end
+   end
+   return(false)
+end
+			  
+
+function cantGoForward ()
+   if turtle.getFuelLevel() <= 0 then
+      while not attemptRefuel() do
+	 print("Out of fuel, Waiting for fuel...")
+	 os.sleep(5)
+      end
+   elseif turtle.detect() then
+      
+      return(forwardBlocked())
+   else
+      return(false)
+   end
+   return(true)
+end
+
+function cantGoUp ()
+   if turtle.getFuelLevel() <= 0 then
+      while not attemptRefuel() do
+	 print("Out of fuel, Waiting for fuel...")
+	 os.sleep(5)
+      end
+   elseif turtle.detectUp() then
+      return(upBlocked())
+   else
+      return(false)
+   end
+   return(true)
+end
+
+
+function cantGoDown ()
+   if turtle.getFuelLevel() <= 0 then
+      while not attemptRefuel() do
+	 print("Out of fuel, Waiting for fuel...")
+	 os.sleep(5)
+      end
+   elseif turtle.detectDown() then
+      return(downBlocked())
+   else
+      return(false)
+   end
+   return(true)
+end
+
+
+function printPos(front)
+   print(front, "X=", currentX, "Y=", currentY, "Z=", currentZ, "Faceing=", faceing)
+end
+
+function attemptForward()
+   if turtle.forward() then
+      if faceing == NORTH then
+	 currentY = currentY - 1
+      elseif faceing == SOUTH then
+	 currentY = currentY + 1
+      elseif faceing == EAST then
+	 currentX = currentX + 1
+      elseif faceing == WEST then
+	 currentX = currentX - 1
+      else
+	 error("Current direction is unknown, faceing ='".. faceing.. "'")
+      end
+   else
+      if not cantGoForward() then
+	 return(false)
+      end
+      
+      return(attemptForward())
+   end
+   return(true)
+end
+
+function forward (dist)
+   if dist < 1 then
+      error("dist must be > 0")
+   end
+
+   for i = 1, dist do
+      while not attemptForward() do
+--	 printPos("Move Failed:")
+	 os.sleep(1)
+      end
+   end
+--   printPos("Move Successfull:")
+   return(true)
+end
+
+function attemptUp()
+   if turtle.up() then
+      currentZ = currentZ + 1
+   else
+      if not cantGoUp() then
+	 return(false)
+      end
+      return(attemptUp())
+   end
+   return(true)
+end
+
+
+
+function attemptDown()
+   if turtle.down() then
+      currentZ = currentZ - 1
+   else
+      if turtle.detectDown() then
+	 if not cantGoDown() then
+	    return(false)
+	 end
+      end
+      return(attemptDown())
+   end
+   return(true)
+end
+
+function up(dist)
+   if dist < 1 then
+      error("dist must be > 0")
+   end
+
+   for i = 1, dist do
+      while not attemptUp() do
+	 --printPos("Move Failed:")
+	 os.sleep(3)
+      end
+   end
+--   printPos("Move Successfull:")
+   return(true)
+end
+
+function down(dist)
+   if dist < 1 then
+      error("dist must be > 0")
+   end
+
+   for i = 1, dist do
+      while not attemptDown() do
+--	 printPos("Move Failed:")
+	 os.sleep(3)
+      end
+   end
+--   printPos("Move Successfull:")
+   return(true)
+end
+
+
+function face(dir)
+   local toTurn = dir - faceing
+   if toTurn == 3 then
+      toTurn = -1
+   elseif toTurn == -3 then
+      toTurn = 1
+   end
+   if toTurn < 0 then
+      for i = 1, toTurn * -1 do
+	 turtle.turnLeft()
+      end
+   elseif toTurn > 0 then
+      for i = 1, toTurn do
+	 turtle.turnRight()
+      end
+   end
+   if dir < 0 then
+      dir = dir + 4 % 4
+   else
+      faceing = dir % 4
+   end
+      -- else do nothing.
+
+   print("toTurn = ", toTurn, "Faceing = ", faceing)
+end
+
+function getFaceingForTurn(right)
+   local dir = 0
+   if right then
+      dir = (faceing + 1) % 4
+   else
+      dir = (faceing - 1) % 4
+   end
+   return(dir)
+end
+  
+function getDirection()
+   return(faceing) 
+end
+   
+
+function turnRight()
+   face(getFaceingForTurn(true))
+end
+
+function turnLeft()
+   face(getFaceingForTurn(false))
+end
+
+function oppositeFaceing(f)
+   if f == NORTH then
+      return(SOUTH)
+   elseif f == SOUTH then
+      return(NORTH)
+   elseif f == EAST then
+      return(WEST)
+   elseif f == WEST then
+      return(EAST)
+   else
+      error("Cant turn around")
+      return(false)
+   end
+end
+
+function turnAround()
+   face(oppositeFaceing(faceing))
+end
+
+   
+
+function north(dist)
+   face(NORTH)
+   forward(dist)
+end
+
+function south(dist)
+   face(SOUTH)
+   forward(dist)
+end
+
+function east(dist)
+   face(EAST)
+   forward(dist)
+end
+
+function west(dist)
+   face(WEST)
+   forward(dist)
+end
+
+function goto(x, y, z)
+   if y == nil then
+      local y = x.y
+      local z = x.z
+      local x = x.x
+   end
+   destx = x - currentX
+   desty = y - currentY 
+   destz = z - currentZ
+   if destx < 0 then
+      west(math.abs(destx))
+   elseif destx > 0 then
+      east(destx)
+   end
+   if desty < 0 then
+      north(math.abs(desty))
+   elseif desty > 0 then
+      south(desty)
+   end
+   if destz < 0 then
+      down(math.abs(destz))
+   elseif destz > 0 then
+      up(destz)
+   end
+end
+
+function savePos()
+   local fp = fs.open("currentPos.txt", "w")
+   fp.write(string.format("X = %d\nY = %d\nZ = %d\nFaceing = %s\n", currentX, currentY, currentZ, faceing ))
+   fp.close()
+   printPos("Location Saved:")
+
+end
+
+function loadPos()
+   local fp = io.open("currentPos.txt", "r")
+   if not fp then
+      fp = io.open("disk/currentPos.txt", "r")
+   end
+   if fp then
+      local newline = ""
+      local data = ""
+      newline = fp:read()
+      while newline do 
+	 data = data .. newline .. "\n"
+	 newline = fp:read()
+      end
+      fp:close()
+      for coord, num in string.gmatch(data, "(%w+) = (-?%d+)") do
+--	 print("coord = ", coord, "Num = ", num)
+	 if coord == "X" then
+	    currentX = tonumber(num)
+	 elseif coord == "Y" then
+	    currentY = tonumber(num)
+	 elseif coord == "Z" then
+	    currentZ = tonumber(num)
+	 elseif coord == "Faceing" then
+	    faceing = tonumber(num)
+	 else
+	    error("Unknown " .. tostring(coord))
+	 end
+      end
+      printPos("Coords are:")
+      return(true)
+   else
+      return(false)
+   end
+end
+
+function setPos(x, y, z, faceing)
+   currentX = x
+   currentY = y
+   currentZ = z
+   faceing = faceing
+end
+
+function getPos()
+   return({x=currentX, y= currentY, z=currentZ,faceing = faceing})
+end
+
+function askPos()
+   local letters = {"X", "Y", "Z", "Faceing"}
+   local num
+   print("What is my current location?")
+   for i =1, #letters do 
+      print(letters[i] , " = ")
+      num = io.read()
+      if letters[i] == "X" then
+	 currentX = tonumber(num)
+      elseif letters[i] == "Y" then
+	 currentY = tonumber(num)
+      elseif letters[i] == "Z" then
+	 currentZ = tonumber(num)
+      elseif letters[i] == "Faceing" then
+	 
+	 if num == "n" then
+	    faceing = NORTH
+	 elseif num == "s" then
+	    faceing = SOUTH
+	 elseif num == "e" then
+	    faceing = EAST
+	 elseif num == "w" then
+	    faceing = WEST
+	 else
+	    error("Which way is " .. num .. "?")
+	 end
+      end
+   end
+   printPos("Thanks! ")
+   savePos()
+end
+
+function main(func)
+   loadPos()
+   func()
+   savePos()
+end
