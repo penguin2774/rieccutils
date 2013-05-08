@@ -1,8 +1,6 @@
-os.loadAPI("/disk/apis/move")
-os.loadAPI("/disk/apis/inv")
 
 print("Good morning commander!")
-files ={"clear", "wall", "tower", "go", "askpos"}
+files ={ "wall", "tower", "go", "askpos", "floor", "remote"}
 
 if fs.exists("/disk") then 
    print("Loading programs...")
@@ -26,6 +24,18 @@ if fs.exists("/disk") then
       
    end
    print("Done")
+   if fs.exists("/disk/currentPos.txt") and not fs.exists("/currentPos.txt") then
+      fs.copy("/disk/currentPos.txt", "/currentPos.txt")
+   end
+   
 end
+
+print("Loading APIs")
+
+os.loadAPI("/apis/move")
+os.loadAPI("/apis/inv")
+os.loadAPI("/apis/build")
+
+
 
 print("Initialized!")

@@ -1,0 +1,21 @@
+
+args = { ... }
+
+if args[1] and args[1] == "help" then
+  print("Makes a Hexagon tower. Starts at the first \"Vert\" (straight line) then turns left")
+  return
+end
+
+if #args ~= 2 then
+   print("Usage: floor width (to the right) depth (forward) ")
+   return
+end
+
+width = tonumber(args[1])
+depth = tonumber(args[2])
+
+currentSlot = 1
+turtle.select(1)
+
+build.floor(width, depth)
+print("Done! (Do I get a cookie?)")

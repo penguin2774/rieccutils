@@ -1,0 +1,79 @@
+
+
+serverID = nil
+
+function login()
+   rednet.broadcast("Hello all!")
+   local foundServer
+   while not foundServer do
+      local senderID, message, dist = rednet.receive()
+      if message == "Welcome to the group." then
+	 foundServer = true
+	 serverID = senderID
+      end
+   end
+end
+
+function recieveOrders(t)
+   if serverID == nil then
+      error("Not logged in.")
+   end
+   while true do
+      local  senderID, message, dist = rednet.receive(t)
+      if senderID == serverID then
+	 return(message)
+	 
+      elseif senderID == nil then
+	 return(nil)
+      end
+   end
+end
+
+
+
+orderTable = {{order = "goto", func = move.goto},
+	      {order = "face", func = move.face}}
+
+	      -- {order = "
+
+function parseArgs(args)
+   local result = {}
+   for x in string.gmatch(args, "(%w+)") do
+      if string.match(x, "%d+") then
+	 table.insert(result, tonumber(x))
+      else
+	 table.insert(result, x)
+      end
+   end
+   return(result)
+end
+	 
+			   
+
+
+function processOrder(message)
+   order, args = string.match(message, "([^ ]+) (.+)")
+   for i,o in pairs(orderTable) do
+      if o.order == order then
+	 return(o.func(unpack(parseArgs(args))))
+      end
+   end
+   error("Unknown order" .. order .. " args=" .. args)
+end
+
+rednet.open("right")
+login()
+while true do
+   msg = recieveOrders()
+   if msg then
+      print("Orders received! '" .. msg.. "'")
+      processOrder(msg)
+   end
+end
+      
+   
+		
+   
+   
+   
+      

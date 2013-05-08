@@ -1,0 +1,53 @@
+
+
+turtles = {}
+
+function findTurtle(id)
+   for i,v in pairs(turtles) do
+      if v.id == id then
+	 return(v)
+      end
+   end
+   return(nil)
+end
+
+
+function login(sid)
+   rednet.send(sid, "Welcome to the group.")
+   print(tostring(sid) .. " Has logged in!")
+   if not findTurtle(sid) then
+      table.insert(turtles, {id=sid, status="waiting"})
+   end
+end
+
+
+function processMessage(sid, msg)
+   if msg == "Hello all!" then
+      login(sid)
+   else
+      print("Ignoring message " .. msg .. ".")
+   end
+end
+
+function serv()
+   while true do
+      sid, msg = rednet.receive(1)
+
+      if sid then
+	 print("Processing message" .. msg .. "\n")
+	 processMessage(sid, msg)
+      else
+	 if turtles[1] then
+	    print("Sending move to random spot order" .. "\n")
+	    rednet.send(turtles[1].id, "goto " .. 
+			tostring(math.random(30)) .. " " ..
+			tostring(math.random(30)) .. " " ..
+			tostring(math.random(10, 20)) .. "\n")
+	 end
+	-- print("waiting...")
+      end
+   end
+end
+
+rednet.open("back")
+serv()
