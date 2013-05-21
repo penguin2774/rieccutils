@@ -1,5 +1,5 @@
 
-
+quit = false
 serverID = nil
 
 function login()
@@ -37,23 +37,30 @@ function recieveOrders(t)
 	 
       elseif senderID == nil then
 	 return(nil)
+      elseif quit == true then
+	 return(nil)
       end
    end
 end
 
+
+function endProgram()
+   quit = true
+end
 
 
 orderTable = {{order = "goto", func = move.goto},
 	      {order = "face", func = move.face},
 	      {order = "wall", func = build.wall},
 	      {order = "floor", func = build.floor},
-	      {order = "tower", func = build.tower}}
+	      {order = "tower", func = build.tower},
+	      {order = "complete", func = endProgram}}
 
 
 function parseArgs(args)
    local result = {}
-   for x in string.gmatch(args, "(%w+)") do
-      if string.match(x, "%d+") then
+   for x in string.gmatch(args, "(-?%w+)") do
+      if string.match(x, "-?%d+") then
 	 table.insert(result, tonumber(x))
       else
 	 table.insert(result, x)
@@ -66,21 +73,28 @@ end
 
 
 function processOrder(message)
-   order, args = string.match(message, "([^ ]+) (.+)")
+   local order, args = string.match(message, "([^ ]+) (.+)")
+   if not order then
+      order = string.match(message, "(%w+)")
+   end
    for i,o in pairs(orderTable) do
       if o.order == order then
-	 return(o.func(unpack(parseArgs(args))))
+	 if args == nil then
+	    return(o.func())
+	 else
+	    return(o.func(unpack(parseArgs(args))))
+	 end
       end
    end
    
-   error("Unknown order" .. order .. " args=" .. args)
+   error("Unknown order" .. order .. " args=" .. tostring(args))
 end
 
 rednet.open("right")
 login()
 print("logged in.")
 local frustration = 0
-while true do
+while not quit do
    msg = recieveOrders()
    if msg then
       print("Orders received! '" .. msg.. "'")

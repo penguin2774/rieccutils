@@ -168,3 +168,29 @@ function floor(width, depth)
    move.goto(startingPos)
 end
 	 
+function clear(width, depth, height)
+   local startingPos = move.getPos()
+   for k = 1, height do
+      for i = 1, width do
+	 for j = 1, depth do
+	    if depth ~= j then
+	       move.forward(1)
+	    end
+	 end
+	 
+	 if i % 2 == 0 then
+	    move.turnLeft()
+	    move.forward(1)
+	    move.turnLeft()
+	 else
+	    move.turnRight()
+	    move.forward(1)
+	    move.turnRight()
+	 end
+      end
+      move.up(1)
+      move.turnAround()
+   end
+   move.goto(startingPos)
+end
+	 
