@@ -4,7 +4,7 @@ print("Good morning commander!")
 
 if turtle then
 
-   files ={ "wall", "tower", "go", "askpos", "floor", "remote"}
+   files ={ "wall", "tower", "go", "askpos", "floor", "clear", "fill", "worker"}
    
    if fs.exists("/disk") then 
       print("Loading Turtle Programs...")
@@ -40,10 +40,14 @@ if turtle then
    os.loadAPI("/apis/move")
    os.loadAPI("/apis/inv")
    os.loadAPI("/apis/build")
+   
    print("Initialized! Running program!")
-   shell.run("/remote")
+   
+   --shell.run("/worker")
+   
+
 else 
-   files = {"server"}
+   files = {"foreman"}
    if fs.exists("/disk") then 
       print("Loading Server Programs...")
       for i = 1, #files do

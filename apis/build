@@ -85,7 +85,7 @@ function placeBlock ()
 	    print("Cant seem to place down...")
 	    return
 	 end
-      end
+      end      
    end
 end
 function continueForward()
@@ -167,12 +167,65 @@ function floor(width, depth)
    end
    move.goto(startingPos)
 end
-	 
+
+function turnForwardTurn(leftp)
+   if leftp then
+      move.turnLeft()
+      move.forward(1)
+      move.turnLeft()
+   else
+      move.turnRight()
+      move.forward(1)
+      move.turnRight()
+   end
+end
+
 function clear(width, depth, height)
    local startingPos = move.getPos()
+   local i, j, k
+   local turnLeft = false
    for k = 1, height do
       for i = 1, width do
 	 for j = 1, depth do
+	    if depth ~= j then
+	       move.forward(1)
+	    end
+	 end
+	 
+	 if i ~= width then
+	    
+	    turnForwardTurn( turnLeft )
+	    turnLeft = not turnLeft
+	 end
+      end
+      if height ~= k then
+	 move.up(1)
+	 move.turnAround()
+
+      end
+   end
+   move.goto(startingPos)
+end
+
+function fill(width, depth)
+      for i = 1, width do
+	 for j = 1, depth do
+	    if not turtle.detectDown() then
+	       local dist = 0
+	       repeat
+		  move.down(1)
+		  dist = dist + 1
+	       until turtle.detectDown() 
+	       while dist ~= 0 do
+		  move.up(1)
+		  placeBlock()
+		  dist = dist - 1
+	       end
+	       
+	    end
+	    
+	    
+
 	    if depth ~= j then
 	       move.forward(1)
 	    end
@@ -188,9 +241,4 @@ function clear(width, depth, height)
 	    move.turnRight()
 	 end
       end
-      move.up(1)
-      move.turnAround()
-   end
-   move.goto(startingPos)
 end
-	 

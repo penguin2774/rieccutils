@@ -1,0 +1,5 @@
+* Bugs
+** TODO Server will attempt to dispatch orders to remotes that aren't ready
+   causes remotes to crash because of "Welcome to the Group" message"
+** TODO Server and clients should quit after recall
+** TODO Some kind of recall/return to base system?

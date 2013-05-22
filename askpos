@@ -1,1 +1,2 @@
-move.askPos()
+
+move.setPos(move.askPos())

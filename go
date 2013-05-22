@@ -45,6 +45,9 @@ elseif args[1] == "east" then
 elseif args[1] == "west" then
   move.west(numorone(args[2]))
   return
+elseif args[1] == "home" then
+  move.goto(0,0,0)
+  move.face(move.NORTH)
 else
   print("I don't know how to ", args[1])
   return
