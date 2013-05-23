@@ -1,2 +1,4 @@
 
-move.setPos(move.askPos())
+move.setPos(move.askPos("Please enter home coords"))
+
+move.savePos()

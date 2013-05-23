@@ -1,0 +1,212 @@
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
+
+-- Master list of logged in turtles working in the group.
+turtles = {}
+args = {...}
+
+-- Finds a turtle with a given rednet ID
+
+function getTurtleByID(rednetID)
+   assert(type(rednetID) == "number")
+   for i,v in pairs(turtles) do
+      if(v.id == rednetID) then
+	 return(v)
+      end
+   end
+end
+
+-- Logs a turtle into the system
+
+function getWorkers(max)
+   rednet.broadcast("Looking for Workers.")
+   local count = 0
+   while true do
+      local sid, msg = rednet.receive(5)
+      if msg == "I'm available!" then
+	 print(tostring(sid) .. " has applied!")
+	 rednet.send(sid, "You're Hired!")
+	 local turtle = {id=sid, status="new", work=nil}
+	 if not getTurtleByID(sid) then
+	    table.insert(turtles, turtle)
+	    count = count + 1
+	 end
+      elseif sid == nil or count == max then
+	 break
+      end
+   end
+end
+
+
+-- Returns the first turtle with a given status
+function getTurtleByStatus(status)
+   assert(type(status) == "string")
+   for i, v in pairs(turtles) do
+      if(v.status == status) then
+	 return(v)
+      end
+   end
+end
+
+-- Sends the next order in the turtles work queue
+function sendNextOrder(turtle)
+   local index
+   print("Sending work order " .. turtle.work[1].order)
+   sendOrder(turtle, turtle.work[1].order, turtle.work[1].args)
+   table.remove(turtle.work, 1)
+   if #turtle.work == 0 then
+      turtle.work = nil
+   end
+end
+
+-- Processes a message from someone   
+function processMessage(sid, msg)
+   if msg == "Awaiting Orders!" then
+      local turtle = getTurtleByID(sid)
+      if turtle == nil then
+	 turtle = login(sid)
+      end
+      if turtle.work ~= nil then
+	 sendNextOrder(turtle)
+      else
+	 turtle.status = "waiting"
+      end
+   else 
+      print("Ignoring message " .. msg .. ".")
+   end
+end
+
+
+-- Sends an order from a worklist to a turtle
+function sendOrder(turtle, order, args)
+   
+   assert(type(order) == "string")
+   assert(type(args) == "table")
+   print("Turtle ID " .. tostring(turtle.id))
+   if #args > 0 then
+      rednet.send(turtle.id, order .. " " .. table.concat(args, " "))
+   else
+      rednet.send(turtle.id, order)
+   end
+   if order == "complete" then
+      for i, v in pairs(turtles) do
+	 if v == turtle then
+	    table.remove(turtles, i)
+	    break
+	 end
+      end
+   else
+      turtle.status = "working"
+   end
+end
+
+-- main function, sends work orders to turtles
+function serv(workList)
+   local workRemaining = workList
+   print(workRemaining)
+   while workRemaining or #turtles ~= 0 do
+      sid, msg = rednet.receive(1)
+      
+      if sid then
+	 print("Processing message '" .. msg .. "'\n")
+	 processMessage(sid, msg)
+      else
+	 if #turtles == 0 and workRemaining then
+	    getWorkers(#workRemaining)
+	 end
+	 if turtles[1] and workRemaining then
+--	    print("Looking for turtles to do work...")
+	    for i,v in pairs(turtles) do
+	       if v.status == "waiting" and v.work == nil then
+		  print("Dispatching work to turtle" .. i)
+		  v.work = workRemaining[1]
+		  sendNextOrder(v)
+		  if #workRemaining ~= 1 then
+		     table.remove(workRemaining, 1)
+		  else
+		     workRemaining = nil
+		     print("All orders dispatched!")
+		  end
+		  
+		  
+	       end
+	    end
+	 end
+	-- print("waiting...")
+      end
+   end
+end
+
+assert(#args == 3, "usage: foreman x y z")
+assert(type(args[1]) == "string")
+startingPoint = vector.new(args[1], args[2], args[3])
+SWPoint = vector.new(0,0,0) + startingPoint
+SEPoint = vector.new(5,0,0) + startingPoint
+NWPoint = vector.new(0,-5, 0) + startingPoint
+NEPoint = vector.new(5,-5, 0) + startingPoint
+
+
+
+workList = {{{order = "goto", args = {SWPoint.x,
+				      SWPoint.y,
+				      SWPoint.z}},
+	     {order = "face", args = {NORTH}},
+	     {order = "wall", args = {5,5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 0, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {NWPoint.x,
+				      NWPoint.y,
+				      NWPoint.z}},
+	     {order = "face", args = {EAST}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 1, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {NEPoint.x,
+				      NEPoint.y,
+				      NEPoint.z}},
+	     {order = "face", args = {SOUTH}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 5, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {SEPoint.x,
+				      SEPoint.y + 1,
+				      SEPoint.z}},
+	     {order = "goto", args = {SEPoint.x,
+				      SEPoint.y,
+				      SEPoint.z}},
+	     {order = "face", args = {WEST}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+	     --{order = "goto", args = {0, 2, 0}},
+	     {order = "complete", args = {}}}}
+	    -- {{order = "goto", args = {startingPoint.x + 1,
+-- 			      startingPoint.y + 1,
+	    -- 			      5+startingPoint.z}},
+	    --  {order = "face", args = {EAST}},
+	    --  {order = "floor", args = {4, 4}},
+	    --  {order = "goto", args = {0, 3, 0}}},
+	    -- {{order = "goto", args = {1+ startingPoint.x,
+	    -- 			      1+startingPoint.y,
+	    -- 			      1+startingPoint.z}},
+	    --  {order = "face", args = {EAST}},
+	    --  {order = "floor", args = {4, 4}},
+	    --  {order = "goto", args = {0, 4, 0}}}}
+
+
+-- for i, v in pairs(workList) do
+--    for j, k in pairs(v) do
+--       print("order = ".. k.order)
+--       for l, m in pairs(k.args) do
+-- 	 print(" arg" .. tostring(l) .. " is " .. tostring(m))
+--       end
+--    end
+-- end
+	    
+
+rednet.open("back")
+serv(workList)

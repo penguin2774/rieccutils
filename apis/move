@@ -6,7 +6,7 @@ faceing = NORTH
 currentX = 0 -- E+ W-
 currentY = 0 -- N+ S-
 currentZ = 0 -- UP+ DOWN-
-
+home = {x=0,y=0,z=0,faceing=0}
 
 
 -- Event reaction functions   
@@ -351,15 +351,46 @@ function setPos(x,y,z,faceing)
 end
 
 
+function getHome()
+   return(home)
+end
+
+function setHome(x, y, z, faceing)
+   if y == nil and type(x) == "table" then
+      home.x = x.x
+      home.y = x.y
+      home.z = x.z
+      home.faceing = x.faceing
+   else
+      home.x = x
+      home.y = y
+      home.z = z
+      home.faceing = faceing
+   end
+end
+
+function setDefaultHome() 
+   setHome((os.getComputerID() % 5) + currentX,
+	   (-3 - math.floor((os.getComputerID() % 20) / 5)) + currentY,
+	   (os.getComputerID() % 5) + currentZ, 
+	   0)
+end
+      
+
+function goHome()
+   goto(home)
+end
+
+
 function getPos()
    return({x=currentX, y= currentY, z=currentZ,faceing = faceing})
 end
 
-function askPos()
+function askPos(msg)
    local letters = {"X", "Y", "Z", "Faceing"}
    local num
    local readPos = {x = 0, y = 0, z = 0, faceing = 0}
-   print("What is my  location?")
+   print(msg)
    for i =1, #letters do 
       print(letters[i] , " = ")
       num = io.read()
@@ -385,8 +416,8 @@ function askPos()
       end
    end
    printPos("Thanks! ")
-   return(
-   //   savePos()
+   return(readPos)
+      
 end
 
 

@@ -41,9 +41,29 @@ if turtle then
    os.loadAPI("/apis/inv")
    os.loadAPI("/apis/build")
    
-   print("Initialized! Running program!")
    
-   --shell.run("/worker")
+   print("Auto Refueling...")
+   do 
+      move.turnRight()
+      local suckResult =  turtle.suck()
+      turtle.select(1)
+      local refuelResult = turtle.refuel(1)
+      if suckResult and refuelResult then
+	 print("Successfuly fueled!")
+      else
+	 print("Failed to fuel, please feed me...")
+	 while not turtle.refuel(1) do 
+	    sleep(1)
+	 end
+      end
+   end
+	 
+   print("Initialized! Running program!")
+  -- homePos = move.askPos("Please enter home coords")
+   move.goto(0,0,1)
+   move.setDefaultHome()
+   move.goHome()
+   shell.run("/worker")
    
 
 else 

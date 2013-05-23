@@ -1,0 +1,118 @@
+
+quit = false
+foremanID = nil
+
+function awaitForeman()
+   while true do
+      id, msg = rednet.receive()
+      if msg == "Looking for Workers." then
+	 sleep(math.random(1, 1000)/1000) -- hopefully avoids spamming foreman
+	 rednet.send(id, "I'm available!")
+      end
+      if msg == "You're Hired!" then
+	 foremanID = id
+	 return(id)
+      end
+      if msg == "Everyone Sleep." then
+	 return(nil)
+      end
+   end
+end
+
+function recieveOrders(t)
+   if foremanID == nil then
+      error("Not logged in.")
+   end
+   rednet.send(foremanID, "Awaiting Orders!")
+   while true do
+      local  senderID, message, dist = rednet.receive(10)
+      if not senderID == nil then
+	 print("Recieved message from ".. tostring(senderID) .. " '" .. message "'.")
+	 print ("Server ID is ".. tostring(foremanID))
+      end
+      if senderID == foremanID then
+	 return(message)
+	 
+      elseif senderID == nil then
+	 return(nil)
+      elseif quit == true then
+	 return(nil)
+      end
+   end
+end
+
+
+function endProgram()
+   quit = true
+end
+
+
+orderTable = {{order = "goto", func = move.goto},
+	      {order = "gohome", func = move.goHome},
+	      {order = "face", func = move.face},
+	      {order = "wall", func = build.wall},
+	      {order = "floor", func = build.floor},
+	      {order = "tower", func = build.tower},
+	      {order = "complete", func = endProgram}}
+
+
+function parseArgs(args)
+   local result = {}
+   for x in string.gmatch(args, "(-?%w+)") do
+      if string.match(x, "-?%d+") then
+	 table.insert(result, tonumber(x))
+      else
+	 table.insert(result, x)
+      end
+   end
+   return(result)
+end
+	 
+			   
+
+
+function processOrder(message)
+   local order, args = string.match(message, "([^ ]+) (.+)")
+   if not order then
+      order = string.match(message, "(%w+)")
+   end
+   for i,o in pairs(orderTable) do
+      if o.order == order then
+	 if args == nil then
+	    return(o.func())
+	 else
+	    return(o.func(unpack(parseArgs(args))))
+	 end
+      end
+   end
+   
+   error("Unknown order" .. order .. " args=" .. tostring(args))
+end
+
+rednet.open("right")
+startingPos = move.getPos()
+
+while true do
+   move.goto(startingPos)
+   quit = false
+   print("Looking for work...")
+   local result = awaitForeman()
+   print("I'm Hired!.")
+   if result then 
+      while not quit do
+	 msg = recieveOrders()
+	 if msg then
+	    print("Orders received! '" .. msg.. "'")
+	    processOrder(msg)
+	 end
+      end
+   end
+end
+    
+      
+   
+		
+   
+   
+   
+      
