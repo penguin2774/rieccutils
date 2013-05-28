@@ -1,3 +1,19 @@
+    -- API for building 
+    -- Copyright (C) 2013  Nathanael Cunningham
+
+    -- This program is free software: you can redistribute it and/or modify
+    -- it under the terms of the GNU General Public License as published by
+    -- the Free Software Foundation, either version 3 of the License, or
+    -- (at your option) any later version.
+
+    -- This program is distributed in the hope that it will be useful,
+    -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+    -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    -- GNU General Public License for more details.
+
+    -- You should have received a copy of the GNU General Public License
+    -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 currentSlot = 1
 turtle.select(1)
 
@@ -124,24 +140,28 @@ function buildDiag (diags)
 end
 
 
-function tower(hight, verts, diags)
+function tower(height, verts, diags)
    currentSlot = 1
+   local starintPos = move.getPos()
    turtle.select(1)
 
-   move.forward(verts % 2 + diags + 1 ) 
+   move.forward(math.ceil((verts + diags * 2) / 2) ) 
    move.turnRight()
-   move.forward(verts % 2 + 1)
+   move.forward(math.floor(verts/2))
    move.turnAround()
    
    
 
-   for i = 1, hight do
+   for i = 1, height do
       for i = 1, 4 do
-	 buildVert(verts)
-	 buildDiag(diags)
+   	 buildVert(verts)
+   	 buildDiag(diags)
       end
-      move.up(1)
+      if i ~= height then
+	 move.up(1)
+      end
    end
+   move.goto(startingPos)
 end
 
 
@@ -241,4 +261,21 @@ function fill(width, depth)
 	    move.turnRight()
 	 end
       end
+end
+
+
+
+function circle(r)
+   startPos = move.getPos()
+   local prevPos = startPos
+   for x = 0, r  do 
+      local nx = x + startPos.x
+      local iy, i = math.sqrt(r^2 - x^2)
+      local ny = math.floor(startPos.y + iy)
+      local nz = startPos.z
+      move.goto(nx, ny, nz)
+      build.placeBlock()
+      prevPos = cPos
+   end
+   move.goto(startPos)
 end

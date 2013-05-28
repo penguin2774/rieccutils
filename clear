@@ -1,4 +1,4 @@
-    -- Builds a wall
+    -- Tellst the turtle to clear an area given by width depth and height
     -- Copyright (C) 2013  Nathanael Cunningham
 
     -- This program is free software: you can redistribute it and/or modify
@@ -14,24 +14,22 @@
     -- You should have received a copy of the GNU General Public License
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+args = {...}
 
-args = { ... }
-
-if args[1] and args[1] == "help" then
-  print("Usage: wall length height\n" ..
-	"Builds a wall 'length' long (heading out from where the turtle is faceing).\n" ..
-	"and height high.")
-  return
+if #args == 1 and args[1] == "help" then
+   print("Usage: clear width depth height"..
+	 "Clears a cuboid area described by:\n"..
+	 "'width' (distence to the right)\n"..
+	 "'depth' (distance forward)\n"..
+	 "'height' (distance up)\n"..
+	 "Starts clearing forward first, proceding right then finaly up\n"..
+	 "*Destroys any block in the cuboid area*\n")
+   return
 end
 
 
-currentSlot = 1
-if #args ~= 2 then
-   print("Usage: wall length height")
-   return
-end	
-width = tonumber(args[1])
-height = tonumber(args[2])
+
+assert(#args == 3, "Usage: clear width depth height")
 
 
-build.wall(width, height)
+build.clear(tonumber(args[1]), tonumber(args[2]), tonumber(args[3]))

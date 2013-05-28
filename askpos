@@ -1,3 +1,26 @@
+    -- Asks the player where the turtle is to set current possition
+    -- Copyright (C) 2013  Nathanael Cunningham
+
+    -- This program is free software: you can redistribute it and/or modify
+    -- it under the terms of the GNU General Public License as published by
+    -- the Free Software Foundation, either version 3 of the License, or
+    -- (at your option) any later version.
+
+    -- This program is distributed in the hope that it will be useful,
+    -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+    -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    -- GNU General Public License for more details.
+
+    -- You should have received a copy of the GNU General Public License
+    -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+if #args == 1 and args[1] == "help" then
+   print("Usage: askpos"
+	 "Asks the turtles current X Y and Z position.\n")
+   return
+end
+
+
 
 move.setPos(move.askPos("Please enter home coords"))
 

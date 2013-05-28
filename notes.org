@@ -3,3 +3,17 @@
    causes remotes to crash because of "Welcome to the Group" message"
 ** TODO Server and clients should quit after recall
 ** TODO Some kind of recall/return to base system?
+* Projects
+** TODO Add Copyleft notice to all programs/APIs
+** Remote Construction Organizer
+*** TODO Worklist file format
+
+** Movement API
+*** TODO Add new options for block encounter event
+**** TODO Add a sleep and try again option
+**** TODO Make sleep and try again default
+**** TODO Add Pathfinding of some kind
+***** TODO Change all higher level move functions to use coords
+***** TODO Add pathfinding options to goto function
+** Building API
+** Inventory API

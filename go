@@ -1,4 +1,31 @@
+    -- Tells the turtle to move in a direction, and maintains position information
+    -- Copyright (C) 2013  Nathanael Cunningham
+
+    -- This program is free software: you can redistribute it and/or modify
+    -- it under the terms of the GNU General Public License as published by
+    -- the Free Software Foundation, either version 3 of the License, or
+    -- (at your option) any later version.
+
+    -- This program is distributed in the hope that it will be useful,
+    -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+    -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    -- GNU General Public License for more details.
+
+    -- You should have received a copy of the GNU General Public License
+    -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 args = {...}
+
+if args[1] and args[1] == "help" then
+  print("Usage: go {direction} numbers...\n"..
+	"Sends the turtle in 'direction' num distance\n"..
+	"goto is also available as a 'direction' with a 'x y z' coordinate\n"..
+	"right and left are also available but do not take numbers")
+  		
+  return
+end
 
 if #args <1 then
   print("usage: go {direction} nums...")

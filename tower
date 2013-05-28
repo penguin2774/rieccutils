@@ -1,103 +1,38 @@
+    -- Builds a hexagon tower of variable wall size
+    -- Copyright (C) 2013  Nathanael Cunningham
+
+    -- This program is free software: you can redistribute it and/or modify
+    -- it under the terms of the GNU General Public License as published by
+    -- the Free Software Foundation, either version 3 of the License, or
+    -- (at your option) any later version.
+
+    -- This program is distributed in the hope that it will be useful,
+    -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+    -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    -- GNU General Public License for more details.
+
+    -- You should have received a copy of the GNU General Public License
+    -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 args = { ... }
 
 if args[1] and args[1] == "help" then
-  print("Makes a Hexagon tower. Starts at the first \"Vert\" (straight line) then turns left")
+   print("Usage: tower height verts diags\n" ..
+	 "Makes a Hexagon tower. Turtle's starting position will be the center of the tower.\n"..
+	 "'verts' is the length of the vertical (and horizontal) portions of the tower.\n"..
+	 "'diags' is the length of the diagonal portions of the tower."
   return
 end
 
+
+
 if #args ~= 3 then
-   print("Usage: tower hight verts diags")
+   print("Usage: tower height verts diags")
    return
 end
 
-hight = tonumber(args[1])
+height = tonumber(args[1])
 verts = tonumber(args[2])
 diags = tonumber(args[3])
-currentSlot = 1
-turtle.select(1)
 
-function findMaterial()
-   for i=1, 16 do
-      if turtle.getItemCount(i) > 0 then
-	 turtle.select(i)
-	 if turtle.compareTo(16) then
-	    currentSlot = i
-	    return(true)
-	 end
-      end
-   end
-   return(false)
-end
-
-function placeBlock ()
-   if turtle.getItemCount(currentSlot) == 0 or not turtle.compareTo(16) then
-      if not findMaterial() then
-	 print("Ran out of material")
-	 return
-      end
-   end
-   if not turtle.compareDown() then
-      if not turtle.placeDown() then
-	 if turtle.detectDown() then
-	    if not turtle.digDown() then
-	       print("Cant dig down...")
-	       return
-	    end
-	 end
-	 if not turtle.placeDown() then
-	    print("Cant seem to place down...")
-	    return
-	 end
-      end
-   end
-end
-function continueForward()
-   while not move.forward(1) do
-      print("Cant seem to move...")
-      turtle.attack()
-      os.sleep(5)
-   end
-end
-
-function continueDiag()
-   move.turnLeft()
-   continueForward()
-   move.turnRight()
-   continueForward()
-end
-
-
-move.forward(verts % 2 + diags + 1) 
-move.turnRight()
-move.forward(verts % 2)
-move.turnAround()
-
-
-function buildVert()
-   for i = 1, verts do
-      placeBlock()
-      if i ~= verts then
-	 continueForward()
-      end
-   end
-end
-   
-function buildDiag ()
-   for i = 0, diags do
-      continueDiag()
-      if i ~= diags then
-	 placeBlock()
-      end
-   end
-   move.turnLeft()
-end
-
-
-for i = 1, hight do
-   for i = 1, 4 do
-      buildVert()
-      buildDiag()
-   end
-   move.up(1)
-end
+build.tower(height, verts diags)
