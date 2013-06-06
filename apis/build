@@ -204,6 +204,8 @@ function clear(width, depth, height)
    local startingPos = move.getPos()
    local i, j, k
    local turnLeft = false
+   local oldBlockedAction = move.getBlockedAction()
+   move.setBlockedAction("break")
    for k = 1, height do
       for i = 1, width do
 	 for j = 1, depth do
@@ -224,6 +226,7 @@ function clear(width, depth, height)
 
       end
    end
+   move.setBlockedAction(oldBlockedAction)
    move.goto(startingPos)
 end
 
@@ -264,8 +267,32 @@ function fill(width, depth)
 end
 
 
+function rectangle(w, d) -- CHECKME
+   startPos = move.getPos()
+   local buildLine = function(d)
+      for x = 0, d do
+	 build.placeBlock()
+	 if x ~= d then
+	    move.forward(1)
+	 end
+      end
+   end
+   for i = 1, 2 do
+      buildLine(d)
+      move.turnRight()
+      move.forward(1)
+      buildLine(w)
+      if i == 2 then
+	 move.goto(startPos)
+      else
+	 move.turnRight()
+	 move.forward(1)
+      end
+   end
+end
 
-function circle(r)
+
+function circle(r) -- FIXME
    startPos = move.getPos()
    local prevPos = startPos
    for x = 0, r  do 

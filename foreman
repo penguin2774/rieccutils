@@ -15,11 +15,6 @@
     -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-NORTH = 0
-EAST = 1
-SOUTH = 2
-WEST = 3
-
 -- Master list of logged in turtles working in the group.
 turtles = {}
 args = {...}
@@ -156,74 +151,13 @@ function serv(workList)
    end
 end
 
-assert(#args == 3, "usage: foreman x y z")
+assert(#args == 4, "usage: foreman worklist ...")
 assert(type(args[1]) == "string")
-startingPoint = vector.new(args[1], args[2], args[3])
-SWPoint = vector.new(0,0,0) + startingPoint
-SEPoint = vector.new(5,0,0) + startingPoint
-NWPoint = vector.new(0,-5, 0) + startingPoint
-NEPoint = vector.new(5,-5, 0) + startingPoint
+--startingPoint = vector.new(args[1], args[2], args[3])
+workList = loadfile("/worklists/" .. args[1])(unpack(args))
 
 
 
-workList = {{{order = "goto", args = {SWPoint.x,
-				      SWPoint.y,
-				      SWPoint.z}},
-	     {order = "face", args = {NORTH}},
-	     {order = "wall", args = {5,5}},
-	     {order = "gohome", args = {}},
---	     {order = "goto", args = {0, 0, 0}},
-	     {order = "complete", args = {}}},
-	    {{order = "goto", args = {NWPoint.x,
-				      NWPoint.y,
-				      NWPoint.z}},
-	     {order = "face", args = {EAST}},
-	     {order = "wall", args = {5, 5}},
-	     {order = "gohome", args = {}},
---	     {order = "goto", args = {0, 1, 0}},
-	     {order = "complete", args = {}}},
-	    {{order = "goto", args = {NEPoint.x,
-				      NEPoint.y,
-				      NEPoint.z}},
-	     {order = "face", args = {SOUTH}},
-	     {order = "wall", args = {5, 5}},
-	     {order = "gohome", args = {}},
---	     {order = "goto", args = {0, 5, 0}},
-	     {order = "complete", args = {}}},
-	    {{order = "goto", args = {SEPoint.x,
-				      SEPoint.y + 1,
-				      SEPoint.z}},
-	     {order = "goto", args = {SEPoint.x,
-				      SEPoint.y,
-				      SEPoint.z}},
-	     {order = "face", args = {WEST}},
-	     {order = "wall", args = {5, 5}},
-	     {order = "gohome", args = {}},
-	     --{order = "goto", args = {0, 2, 0}},
-	     {order = "complete", args = {}}}}
-	    -- {{order = "goto", args = {startingPoint.x + 1,
--- 			      startingPoint.y + 1,
-	    -- 			      5+startingPoint.z}},
-	    --  {order = "face", args = {EAST}},
-	    --  {order = "floor", args = {4, 4}},
-	    --  {order = "goto", args = {0, 3, 0}}},
-	    -- {{order = "goto", args = {1+ startingPoint.x,
-	    -- 			      1+startingPoint.y,
-	    -- 			      1+startingPoint.z}},
-	    --  {order = "face", args = {EAST}},
-	    --  {order = "floor", args = {4, 4}},
-	    --  {order = "goto", args = {0, 4, 0}}}}
-
-
--- for i, v in pairs(workList) do
---    for j, k in pairs(v) do
---       print("order = ".. k.order)
---       for l, m in pairs(k.args) do
--- 	 print(" arg" .. tostring(l) .. " is " .. tostring(m))
---       end
---    end
--- end
-	    
 
 rednet.open("back")
 serv(workList)

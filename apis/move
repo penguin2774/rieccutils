@@ -26,10 +26,71 @@ currentZ = 0 -- UP+ DOWN-
 home = {x=0,y=0,z=0,faceing=0}
 
 
--- Event reaction functions   
-upBlocked = turtle.digUp
-forwardBlocked = turtle.dig
-downBlocked = turtle.digDown
+function setBlockedAction(action)
+   local sleepItOffUp = function ()
+      while turtle.detectUp() do
+	 os.sleep(5)
+      end
+   end
+   local sleepItOff = function ()
+      while turtle.detect() do
+	 os.sleep(5)
+      end
+   end
+   local sleepItOffDown = function ()
+      while turtle.detectDown() do
+	 os.sleep(5)
+      end
+   end
+   -- 
+   local waitThenDigUp = function ()
+      os.sleep(5)
+      if turtle.detectUp() then
+	 turtle.digUp()
+      end
+   end
+   local waitThenDig = function ()
+      os.sleep(5)
+      if turtle.detect() then
+	 turtle.dig()
+      end
+   end
+   local waitThenDigDown = function ()
+      os.sleep(5)
+      if turtle.detectDown() then
+	 turtle.digDown()
+      end
+   end
+
+
+   if action == "wait" then
+      upBlocked = sleepItOffUp
+      forwardBlocked = sleepItOff
+      downBlocked = sleepItOffDown
+      blockedAction = "wait"
+   elseif action == "break" then
+      upBlocked = turtle.digUp
+      forwardBlocked = turtle.dig
+      downBlocked = turtle.digDown
+      blockedAction = "break"
+   elseif action == "wait then break" then
+      upBlocked = waitThenDigUp
+      forwardBlocked = waitThenDig
+      downBlocked = waitThenDigDown
+      blockedAction = "wait then break"
+   end
+   
+end
+
+function getBlockedAction()
+   return(blockedAction)
+end
+
+
+-- Default action when blocked
+
+setBlockedAction("wait then break")
+
 
 function attemptRefuel()
    for i = 1, 16 do

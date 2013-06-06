@@ -1,19 +1,28 @@
 * Bugs
-** TODO Server will attempt to dispatch orders to remotes that aren't ready
+** DONE Server will attempt to dispatch orders to remotes that aren't ready
    causes remotes to crash because of "Welcome to the Group" message"
-** TODO Server and clients should quit after recall
-** TODO Some kind of recall/return to base system?
+** DONE Server and clients should quit after recall
+** DONE Some kind of recall/return to base system?
 * Projects
-** TODO Add Copyleft notice to all programs/APIs
+** DONE Add Copyleft notice to all programs/APIs
 ** Remote Construction Organizer
 *** TODO Worklist file format
 
 ** Movement API
 *** TODO Add new options for block encounter event
-**** TODO Add a sleep and try again option
-**** TODO Make sleep and try again default
+**** DONE Add a sleep and try again option
+**** DONE Make sleep and try again default
 **** TODO Add Pathfinding of some kind
 ***** TODO Change all higher level move functions to use coords
 ***** TODO Add pathfinding options to goto function
 ** Building API
+*** TODO Line/Wall Building Function
+    from x1,y1 to x2,y2
+*** TODO Cylinder building function
+    y=sqrt(r^2-x^2)
+
+    need to fill in between x coordinates
+*** TODO Box Building Function
+*** TODO Stick Building Function
+*** TODO Frame Building Function
 ** Inventory API
