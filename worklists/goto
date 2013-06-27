@@ -1,0 +1,16 @@
+args = {...}
+--print(args[1] ..  ", " .. tostring(args[2]) .. ", " .. tostring(args[3]) .. ", " .. tostring(args[4]))
+startingPoint = vector.new(args[2], args[3], args[4])
+
+SWPoint = vector.new(0,0,0) + startingPoint
+SEPoint = vector.new(5,0,0) + startingPoint
+NWPoint = vector.new(0,-5, 0) + startingPoint
+NEPoint = vector.new(5,-5, 0) + startingPoint
+
+
+
+workList = {{{order = "goto", args = {SWPoint.x,
+				      SWPoint.y,
+				      SWPoint.z}}}}
+
+return(workList)

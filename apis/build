@@ -30,6 +30,36 @@ function findMaterial()
    return(false)
 end
 
+PickupPoint = nil
+
+function setResourceRefillPoint(x, y, z)
+   local point
+   if y == nil and x.x then
+      point = x
+   else
+      point = vector.new(x,y,z)
+   end
+   PickupPoint = point
+end
+   
+function refillResources()
+   if not inv.findEmptySlot() then
+      error("No empty slots available")
+   elseif not PickupPoint then
+      error("No Resource Pickup Point")
+   end
+   if PickupPoint then
+      p = {x = PickupPoint.x, y = PickupPoint.y, z = PickupPoint.z+1}
+      move.goto(p)
+      repeat 
+	 local success = turtle.suckDown()
+      until not inv.findNextEmptySlot() or not success
+   end
+   return true
+end
+      
+
+
 function wall(width, height)
    move.up(1)
    findMaterial()
@@ -85,7 +115,7 @@ end
 function placeBlock ()
    if turtle.getItemCount(currentSlot) == 0 or not turtle.compareTo(16) then
       if not findMaterial() then
-	 print("Ran out of material")
+	 error("Ran out of material")
 	 return
       end
    end
@@ -93,12 +123,12 @@ function placeBlock ()
       if not turtle.placeDown() then
 	 if turtle.detectDown() then
 	    if not turtle.digDown() then
-	       print("Cant dig down...")
+	       error("Can't dig down")
 	       return
 	    end
 	 end
 	 if not turtle.placeDown() then
-	    print("Cant seem to place down...")
+	    error("Cant seem to place down")
 	    return
 	 end
       end      
@@ -301,8 +331,19 @@ function circle(r) -- FIXME
       local ny = math.floor(startPos.y + iy)
       local nz = startPos.z
       move.goto(nx, ny, nz)
-      build.placeBlock()
+      
+      local _, error = pcall(build.placeBlock)
+      if error == "Ran out of material" then
+	 move.goto(startPos)
+	 print("Please insert more materials.")
+	 while not findMaterial() do
+	    os.sleep(5)
+	 end
+      end
+      
       prevPos = cPos
    end
    move.goto(startPos)
 end
+
+

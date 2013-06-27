@@ -19,10 +19,8 @@ NORTH = 0
 EAST = 1
 SOUTH = 2
 WEST = 3
-faceing = NORTH
-currentX = 0 -- E+ W-
-currentY = 0 -- N+ S-
-currentZ = 0 -- UP+ DOWN-
+
+currentPos = {x = 0, y = 0, z = 0, faceing = 0}
 home = {x=0,y=0,z=0,faceing=0}
 
 
@@ -149,21 +147,21 @@ end
 
 
 function printPos(front)
-   print(front, "X=", currentX, "Y=", currentY, "Z=", currentZ, "Faceing=", faceing)
+   print(front, "X=", currentPos.x, "Y=", currentPos.y, "Z=", currentPos.z, "Faceing=", currentPos.faceing)
 end
 
 function attemptForward()
    if turtle.forward() then
-      if faceing == NORTH then
-	 currentY = currentY - 1
-      elseif faceing == SOUTH then
-	 currentY = currentY + 1
-      elseif faceing == EAST then
-	 currentX = currentX + 1
-      elseif faceing == WEST then
-	 currentX = currentX - 1
+      if currentPos.faceing == NORTH then
+	 currentPos.y = currentPos.y - 1
+      elseif currentPos.faceing == SOUTH then
+	 currentPos.y = currentPos.y + 1
+      elseif currentPos.faceing == EAST then
+	 currentPos.x = currentPos.x + 1
+      elseif currentPos.faceing == WEST then
+	 currentPos.x = currentPos.x - 1
       else
-	 error("Current direction is unknown, faceing ='".. faceing.. "'")
+	 error("Current direction is unknown, faceing ='".. currentPos.faceing.. "'")
       end
    else
       if not cantGoForward() then
@@ -192,7 +190,7 @@ end
 
 function attemptUp()
    if turtle.up() then
-      currentZ = currentZ + 1
+      currentPos.z = currentPos.z + 1
    else
       if not cantGoUp() then
 	 return(false)
@@ -206,7 +204,7 @@ end
 
 function attemptDown()
    if turtle.down() then
-      currentZ = currentZ - 1
+      currentPos.z = currentPos.z - 1
    else
       if turtle.detectDown() then
 	 if not cantGoDown() then
@@ -250,7 +248,7 @@ end
 
 
 function face(dir)
-   local toTurn = dir - faceing
+   local toTurn = dir - currentPos.faceing
    if toTurn == 3 then
       toTurn = -1
    elseif toTurn == -3 then
@@ -268,25 +266,25 @@ function face(dir)
    if dir < 0 then
       dir = dir + 4 % 4
    else
-      faceing = dir % 4
+      currentPos.faceing = dir % 4
    end
       -- else do nothing.
 
---   print("toTurn = ", toTurn, "Faceing = ", faceing)
+--   print("toTurn = ", toTurn, "Faceing = ", currentPos.faceing)
 end
 
 function getFaceingForTurn(right)
    local dir = 0
    if right then
-      dir = (faceing + 1) % 4
+      dir = (currentPos.faceing + 1) % 4
    else
-      dir = (faceing - 1) % 4
+      dir = (currentPos.faceing - 1) % 4
    end
    return(dir)
 end
   
 function getDirection()
-   return(faceing) 
+   return(currentPos.faceing) 
 end
    
 
@@ -314,7 +312,7 @@ function oppositeFaceing(f)
 end
 
 function turnAround()
-   face(oppositeFaceing(faceing))
+   face(oppositeFaceing(currentPos.faceing))
 end
 
    
@@ -342,14 +340,14 @@ end
 function goto(x, y, z)
    local destx, desty, destz
    if y == nil then
-      destx = x.x - currentX
-      desty = x.y - currentY 
-      destz = x.z - currentZ
+      destx = x.x - currentPos.x
+      desty = x.y - currentPos.y 
+      destz = x.z - currentPos.z
 
    else
-      destx = x - currentX
-      desty = y - currentY 
-      destz = z - currentZ
+      destx = x - currentPos.x
+      desty = y - currentPos.y 
+      destz = z - currentPos.z
    end
    if destx < 0 then
       west(math.abs(destx))
@@ -371,18 +369,18 @@ function goto(x, y, z)
    end
 end
 
-function savePos()
-   local fp = fs.open("currentPos.txt", "w")
-   fp.write(string.format("X = %d\nY = %d\nZ = %d\nFaceing = %s\n", currentX, currentY, currentZ, faceing ))
+function savePos(point, filename)
+   local fp = fs.open(filename, "w")
+   fp.write(string.format("X = %d\nY = %d\nZ = %d\nFaceing = %s\n", point.x, point.y, point.z, point.faceing ))
    fp.close()
    printPos("Location Saved:")
 
 end
 
-function loadPos()
-   local fp = io.open("currentPos.txt", "r")
+function loadPos(filename)
+   local fp = io.open(, "r")
    if not fp then
-      fp = io.open("disk/currentPos.txt", "r")
+      fp = io.open(filename, "r")
    end
    if fp then
       local newline = ""
@@ -393,22 +391,23 @@ function loadPos()
 	 newline = fp:read()
       end
       fp:close()
+      point = {}
       for coord, num in string.gmatch(data, "(%w+) = (-?%d+)") do
 --	 print("coord = ", coord, "Num = ", num)
 	 if coord == "X" then
-	    currentX = tonumber(num)
+	    point.x = tonumber(num)
 	 elseif coord == "Y" then
-	    currentY = tonumber(num)
+	    point.y = tonumber(num)
 	 elseif coord == "Z" then
-	    currentZ = tonumber(num)
+	    point.z = tonumber(num)
 	 elseif coord == "Faceing" then
-	    faceing = tonumber(num)
+	    point.faceing = tonumber(num)
 	 else
 	    error("Unknown " .. tostring(coord))
 	 end
       end
       printPos("Coords are:")
-      return(true)
+      return(point)
    else
       return(false)
    end
@@ -416,15 +415,15 @@ end
 
 function setPos(x,y,z,faceing)
    if y == nil and type(x) == "table" then
-      currentX = x.x
-      currentY = x.y
-      currentZ = x.z
-      faceing = x.faceing
+      currentPos.x = x.x
+      currentPos.y = x.y
+      currentPos.z = x.z
+      currentPos.faceing = x.faceing
    else
-      currentX = x
-      currentY = y
-      currentZ = z
-      faceing = faceing
+      currentPos.x = x
+      currentPos.y = y
+      currentPos.z = z
+      currentPos.faceing = faceing
    end
 end
 
@@ -448,9 +447,9 @@ function setHome(x, y, z, faceing)
 end
 
 function setDefaultHome() 
-   setHome((os.getComputerID() % 5) + currentX,
-	   (-3 - math.floor((os.getComputerID() % 20) / 5)) + currentY,
-	   (os.getComputerID() % 5) + currentZ, 
+   setHome((os.getComputerID() % 5) + currentPos.x,
+	   (-3 - math.floor((os.getComputerID() % 20) / 5)) + currentPos.y,
+	   (os.getComputerID() % 5) + currentPos.z, 
 	   0)
 end
       
@@ -461,7 +460,7 @@ end
 
 
 function getPos()
-   return({x=currentX, y= currentY, z=currentZ,faceing = faceing})
+   return({x=currentPos.x, y= currentPos.y, z=currentPos.z, faceing = currentPos.faceing})
 end
 
 function askPos(msg)
@@ -493,7 +492,7 @@ function askPos(msg)
 	 end
       end
    end
-   printPos("Thanks! ")
+  -- printPos("Thanks! ")
    return(readPos)
       
 end

@@ -1,0 +1,58 @@
+
+function checkBlocks()
+   turtle.select(16)
+   move.turnLeft()
+   if turtle.detect() and not turtle.compair()  then
+      turtle.dig()
+   end
+   if turtle.detectUp() and not turtle.compairUp() then
+      turtle.digUp()
+   end
+   if turtle.detectDown() and not turtle.compairDown() then
+      turtle.digDown()
+   end
+   move.turnRight()
+   move.turnRight()
+   if turtle.detectDown() and not turtle.compair() then
+      turtle.dig()
+   end
+end
+
+function dropAll()
+   for i = 1, 15 do
+      turtle.select(i)
+      turtle.drop()
+   end
+end
+
+function inventoryFull()
+   for i = 0, 16 do
+      if turtle.getItemCount(i) == 0 then
+	 return false
+      end
+   end
+   return true
+end
+
+function fuelOK(distBack)
+   return(turtle.getFuelLevel() <= distBack + 10)
+end
+
+function mineForward(dist)
+   distTraveled = 0
+   move.setBlockedAction("break")
+   turtle.select(16)
+   while distTraveled > dist do
+      if move.forward() then
+	 checkBlocks()
+	 distTraveled = distTraveled + 1
+      else
+	 move.turnAround()
+	 move.forward(distTraveled)
+	 move.
+	 print("Some kind of bockage is in my way")
+	 return
+      end
+      
+end
+

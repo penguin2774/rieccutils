@@ -1,0 +1,54 @@
+args = {...}
+startingPoint = vector.new(args[2], args[3], args[4])
+
+SWPoint = vector.new(0,0,0) + startingPoint
+SEPoint = vector.new(5,0,0) + startingPoint
+NWPoint = vector.new(0,-5, 0) + startingPoint
+NEPoint = vector.new(5,-5, 0) + startingPoint
+
+
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
+
+
+workList = {{{order = "goto", args = {SWPoint.x,
+				      SWPoint.y,
+				      SWPoint.z}},
+	     {order = "face", args = {NORTH}},
+	     {order = "wall", args = {5,5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 0, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {NWPoint.x,
+				      NWPoint.y,
+				      NWPoint.z}},
+	     {order = "face", args = {EAST}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 1, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {NEPoint.x,
+				      NEPoint.y,
+				      NEPoint.z}},
+	     {order = "face", args = {SOUTH}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+--	     {order = "goto", args = {0, 5, 0}},
+	     {order = "complete", args = {}}},
+	    {{order = "goto", args = {SEPoint.x,
+				      SEPoint.y + 1,
+				      SEPoint.z}},
+	     {order = "goto", args = {SEPoint.x,
+				      SEPoint.y,
+				      SEPoint.z}},
+	     {order = "face", args = {WEST}},
+	     {order = "wall", args = {5, 5}},
+	     {order = "gohome", args = {}},
+	     --{order = "goto", args = {0, 2, 0}},
+	     {order = "complete", args = {}}}}
+
+
+
+return(workList)

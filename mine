@@ -1,0 +1,83 @@
+if not move then
+   os.loadAPI("apis/move")
+end
+function checkBlocks()
+   turtle.select(16)
+   move.turnLeft()
+   if turtle.detect() and not turtle.compare()  then
+      turtle.dig()
+   end
+   if turtle.detectUp() and not turtle.compareUp() then
+      turtle.digUp()
+   end
+   if turtle.detectDown() and not turtle.compareDown() then
+      turtle.digDown()
+   end
+   move.turnRight()
+   move.turnRight()
+   if turtle.detectDown() and not turtle.compare() then
+      turtle.dig()
+   end
+   move.turnLeft()
+end
+
+function dropAll()
+   for i = 1, 15 do
+      if turtle.getItemCount(i) ~= 0 then
+	 turtle.select(i)
+	 turtle.drop()
+      end
+   end
+end
+
+function inventoryFull()
+   for i = 1, 16 do
+      if turtle.getItemCount(i) == 0 then
+	 return false
+      end
+   end
+   return true
+end
+
+function fuelOK(distBack)
+   return(turtle.getFuelLevel() <= distBack + 10)
+end
+
+
+function dropOffGoods(distTraveled, doneP)
+   move.turnAround()
+   move.forward(distTraveled)
+   dropAll()
+   move.turnAround()
+   if not doneP then
+      move.forward(distTraveled)
+   end
+end
+
+function mineForward(dist)
+   distTraveled = 0
+   
+   move.setBlockedAction("break")
+   turtle.select(16)
+   while distTraveled < dist do
+      if move.forward(1) then
+	 checkBlocks()
+	 distTraveled = distTraveled + 1
+	 if inventoryFull() then
+	    dropOffGoods(distTraveled)
+	 end
+      else
+	 move.turnAround()
+	 move.forward(distTraveled)
+	 dropAll()
+	 move.turnAround()
+	 print("Some kind of bockage is in my way")
+	 return
+      end
+   end
+   dropOffGoods(distTraveled, true)
+   print("Completed Mining")
+end
+
+args = {...}
+mineForward(tonumber(args[1]))
