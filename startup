@@ -55,6 +55,14 @@ if turtle then
    os.loadAPI("/apis/move")
    os.loadAPI("/apis/inv")
    os.loadAPI("/apis/build")
+
+   print("Loading points of intrest.")
+   if fs.exists("/disk/current.point") then
+      move.setPos(move.loadPos("/disk/current.point"))
+   end
+   if fs.exists("/disk/resources.point") then
+      build.setResourceRefillPoint(move.loadPos("/disk/resources.point"))
+   end
    
    
    print("Auto Refueling...")
@@ -72,16 +80,6 @@ if turtle then
 	 end
       end
    end
-   print("Loading points of intrest.")
-   if fs.exists("/disk/current.point") then
-      move.setPos(move.loadPos("/disk/current.point"))
-   end
-   if fs.exists("/disk/resources.point") then
-      move.setPos(move.loadPos("/disk/resources.point"))
-   end
-   -- if fs.exists("/disk/home.point") then
-   --    move.setPos(move.loadPos("/disk/home.point"))
-   -- end
    
    print("Initialized! Running program!")
   -- homePos = move.askPos("Please enter home coords")

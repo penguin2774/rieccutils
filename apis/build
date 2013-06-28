@@ -68,7 +68,7 @@ function wall(width, height)
 	 if not turtle.placeDown() then
 	    if turtle.getItemCount(currentSlot) == 0 then
 	       if not findMaterial() then
-		  print("Ran out of material")
+	       	  print("Ran out of material")
 		  return
 	       end
 	    end
@@ -99,23 +99,10 @@ function wall(width, height)
 end
 
 
-function findMaterial()
-   for i=1, 16 do
-      if turtle.getItemCount(i) > 0 then
-	 turtle.select(i)
-	 if turtle.compareTo(16) then
-	    currentSlot = i
-	    return(true)
-	 end
-      end
-   end
-   return(false)
-end
-
 function placeBlock ()
    if turtle.getItemCount(currentSlot) == 0 or not turtle.compareTo(16) then
       if not findMaterial() then
-	 error("Ran out of material")
+      	 error("Ran out of material")
 	 return
       end
    end

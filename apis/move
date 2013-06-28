@@ -378,7 +378,7 @@ function savePos(point, filename)
 end
 
 function loadPos(filename)
-   local fp = io.open(, "r")
+   local fp = io.open(filename, "r")
    if not fp then
       fp = io.open(filename, "r")
    end
