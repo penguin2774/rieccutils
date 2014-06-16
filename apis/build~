@@ -108,9 +108,6 @@ function wall(width, height)
    for y = 1, height do
       for x = 1, width do
          placeBlock()
-         if x ~= width then
-            move.forward(1)   
-         end
       end
       move.turnAround()
       move.up(1)

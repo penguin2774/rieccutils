@@ -21,25 +21,25 @@ if turtle then
 
    files ={ "wall", "tower", "go", "askpos", "floor", "clear", "fill", "worker", "mine"}
    
-   if fs.exists("/disk/rieccutils") then 
+   if fs.exists("/disk/rieccraft") then 
       print("Loading Turtle Programs...")
       for i = 1, #files do
 	 if fs.exists("/"..files[i]) then
 	    fs.delete("/"..files[i])
 	 end
-	 fs.copy("/disk/rieccutils/"..files[i], "/"..files[i])
+	 fs.copy("/disk/rieccraft/"..files[i], "/"..files[i])
       end
       print("Done.")
-      apis = {"move", "inv", "build", "mining"}
+      apis = {"move", "inv", "build"}
       print("Loading APIs")
       if not fs.exists("/apis") then
-      	 fs.makeDir("/apis")
+	 fs.makeDir("/apis")
       end
       for i = 1, #apis do
 	 if fs.exists("/apis/"..apis[i]) then
 	    fs.delete( "/apis/"..apis[i])
 	 end
-	 fs.copy("/disk/rieccutils/apis/"..apis[i], "/apis/"..apis[i])
+	 fs.copy("/disk/rieccraft/apis/"..apis[i], "/apis/"..apis[i])
 	 
       end
       print("Done")
@@ -92,7 +92,7 @@ if turtle then
 else 
    local files = {"foreman"}
    local apis = {"worklist"}
-   if fs.exists("/disk/rieccutils") then 
+   if fs.exists("/disk/rieccraft") then 
 
       print("Loading Server APIs...")
       if not fs.exists("/apis") then
@@ -102,7 +102,7 @@ else
 	 if fs.exists("/apis/"..apis[i]) then
 	    fs.delete("/apis/"..apis[i])
 	 end
-	 fs.copy("/disk/rieccutils/apis/"..apis[i], "/apis/"..apis[i])
+	 fs.copy("/disk/rieccraft/apis/"..apis[i], "/apis/"..apis[i])
       end
       print("Loading APIs")
       for i = 1, #apis do
@@ -113,7 +113,7 @@ else
 	 if fs.exists("/"..files[i]) then
 	    fs.delete("/"..files[i])
 	 end
-	 fs.copy("/disk/rieccutils/"..files[i], "/"..files[i])
+	 fs.copy("/disk/rieccraft/"..files[i], "/"..files[i])
       end
       print("Loading Worklists...")
       worklists = fs.list("/disk/worklists")
@@ -124,7 +124,7 @@ else
 	 if fs.exists("/worklists/" .. v) then
 	    fs.delete("/worklists/" .. v)
 	 end
-	 fs.copy("/disk/rieccutils/worklists/" .. v, "/worklists/" .. v)
+	 fs.copy("/disk/rieccraft/worklists/" .. v, "/worklists/" .. v)
       end
    end
    

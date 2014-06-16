@@ -47,11 +47,9 @@ end
 function dropOffGoods(distTraveled, doneP)
    move.turnAround()
    move.forward(distTraveled)
-   move.goto(startingChestPos)
    dropAll()
    move.turnAround()
    if not doneP then
-      move.goto(tunnelPos)
       move.forward(distTraveled)
    end
 end
@@ -63,18 +61,18 @@ function mineForward(dist)
    turtle.select(16)
    while distTraveled < dist do
       if move.forward(1) then
-         checkBlocks()
-         distTraveled = distTraveled + 1
-         if inventoryFull() then
-            dropOffGoods(distTraveled)
-         end
+	 checkBlocks()
+	 distTraveled = distTraveled + 1
+	 if inventoryFull() then
+	    dropOffGoods(distTraveled)
+	 end
       else
-         move.turnAround()
-         move.forward(distTraveled)
-         dropAll()
-         move.turnAround()
-         print("Some kind of bockage is in my way")
-         return
+	 move.turnAround()
+	 move.forward(distTraveled)
+	 dropAll()
+	 move.turnAround()
+	 print("Some kind of bockage is in my way")
+	 return
       end
    end
    dropOffGoods(distTraveled, true)
