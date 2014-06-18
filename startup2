@@ -1,0 +1,6 @@
+print("Loading APIs")
+   
+os.loadAPI("/apis/move")
+os.loadAPI("/apis/inv")
+os.loadAPI("/apis/build")
+os.loadAPI("/apis/mining")
